@@ -8,11 +8,12 @@ $(function() {
 		// Create an instance of the tree chart
 		var treeChart = TreeChart();
 		
+		
 		// Select the container div, bind the data (datum) to it,
   		// then call the instantiation of the tree chart function
 		var chartWrapper = d3.select("#treeExample")
 			.datum(root).
-			call(chart1);
+			call(treeChart);
 			
 		// // Assign event handler to form
 		//   // Assign event handler to form

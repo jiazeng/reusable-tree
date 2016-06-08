@@ -42,10 +42,11 @@ var TreeChart = function () {
 		selection.each(function(root) {
 			// Select `this` as the element in which you want to render your chart
      		var div = d3.select(this);		// container	
+			 
 			
-			var margin = {top: 100, right: 50, bottom: 100, left: 50},
-				width = 900 - margin.left - margin.right,
-				height = 500 - margin.top - margin.bottom;
+			margin = {top: 100, right: 50, bottom: 100, left: 50};
+			width = 900 - margin.left - margin.right;
+			height = 500 - margin.top - margin.bottom;
 			
 			var tree = d3.layout.tree()
 				.separation(function(a, b) { return a.parent === b.parent ? 1 : 1.2; })
@@ -64,7 +65,8 @@ var TreeChart = function () {
 				.attr("transform", "translate(" + margin.left + "," + margin.top + ")");
 			
 			// var nodes = tree.nodes(getData2());
-			var nodes = tree.nodes(root);
+			var nodes = tree.nodes(root[0]);
+			
 			
 			var node = svg.selectAll(".node")
 				.data(nodes)
@@ -90,10 +92,12 @@ var TreeChart = function () {
 				.enter()
 				.insert("path", "g")
 				.attr("fill", "none")
-				.attr("stroke", "linkColor")
+				.attr("stroke", linkColor)
 				.attr("shape-rendering", "crispEdges")
 				.attr("d", connect2);
-    
+    		
+
+			
 			function connect2(d, i) {
 				return     "M" + d.source.x + "," + ( d.source.y)
 						+ "V" + ((3*d.source.y + 4*d.target.y)/7)
@@ -101,9 +105,14 @@ var TreeChart = function () {
 						+ "V" + (d.target.y);
 			};
 			
-			// Use the .exit() and .remove() methods to remove elements that are no longer in the data
-			node.exit().remove();
-            link.exit().remove();
+			// // Use the .exit() and .remove() methods to remove elements that are no longer in the data
+			// node.exit().remove();
+            // link.exit().remove();           
+			// d3.select(self.frameElement).style("height", height + "px");
+
+			
+			// test
+			console.log(root[0]);
 		})
 	};
 	

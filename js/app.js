@@ -1,41 +1,84 @@
-// Main JavaScript File for divide-and-conquer
 
-// After the page load
-$(function chart1() {
-	var data = "../data/top-bottom-tree.json";
+var myApp = angular.module('myApp', [])
 
-	
-	d3.json(data, function(error, root) {
-		if(error) throw error;
-		
-		// Create an instance of the tree chart
-		var treeChart = TreeChart();
-		
-		
-		// Select the container div, bind the data (datum) to it,
-  		// then call the instantiation of the tree chart function
-		var chartWrapper = d3.select("#treeExample")
-			.datum(root).
-			call(treeChart);
-	});	
-});
+// Main controller
+.controller('MainController', function($scope) {
+     // Data for the chart
+     $scope.data = [
+       {id:0, text:'Paragraph 0'},
+       {id:1, text:'Paragraph 1'},
+       {id:2, text:'Paragraph 2'},
+       {id:3, text:'Paragraph 3'}
+     ];
 
+     // Array of objects that correspond to each step
+     $scope.settings = [
+       {color:'red', fontSize:20, filter:function(d){return d}},
+       {color:'blue', fontSize:10, filter:function(d){return d.id>2}},
+       {color:'orange', fontSize:100, filter:function(d){return d.id<3}},
+       {color:'green', fontSize:30, filter:function(d){return d}},
+     ];
 
-$(function chart2() {
-	// var data2 = "./data/bottom-to-top.json";
+     $scope.step = 0;
 
-	
-	d3.json("../data/bottom-top-tree.json", function(error, root) {
-		if(error) throw error;
-		
-		// Create an instance of the tree chart
-		var treeChart2 = TreeChart2();
-		
-		
-		// Select the container div, bind the data (datum) to it,
-  		// then call the instantiation of the tree chart function
-		var chartWrapper2 = d3.select("#treeExample2")
-			.datum(root).
-			call(treeChart2);
-	});	
+     // Text for each section
+     $scope.sectionText = [
+       {text:'Section 0'},
+       {text:'Section 1'},
+       {text:'Section 2'},
+       {text:'Section 3'}
+     ];
+
+     // Desired section height
+     $scope.sectionHeight = 400;
+ })
+
+// Projects controller
+.controller('ProjectsController', function($scope, ProjectData){
+  ProjectData.then(function(data){
+    $scope.projects = data
+  })
+})
+
+// Scroll directive
+.directive("scroll", function ($window) {
+    return {
+      restrict:'E', // this directive is specified as an html element <scroll>
+      scope:false, // use global scope
+      // Create a link function that allows dynamic element creation
+      link:function(scope, elem) {
+          elem.bind("scroll", function() {
+              scope.step = Math.ceil((this.scrollTop - 10)/ scope.sectionHeight);
+              scope.$apply();
+          });
+      }
+    };
+})
+
+// Create a directive 'scatter' that creates scatterplots
+.directive('paragraphChart', function($filter, $compile) {
+	// Return your directive element
+	return {
+		restrict:'E', // this directive is specified as an html element <scatter>
+    scope:false,
+		// Create a link function that allows dynamic element creation
+		link:function(scope,elem,attrs){
+			// Use the scope.$watch method to watch for changes to the step, then re-draw your chart
+			scope.$watch('step', function() {
+
+        // Instantiate your chart with given settings
+        // var color = scope.settings[scope.step].color;
+        // var fontSize = scope.settings[scope.step].fontSize;
+        var myChart = TreeChart();
+
+        // Get the current data
+        var currentData = scope.data.filter(scope.settings[scope.step].filter);
+
+  			// Wrapper element to put your svg (chart) in
+  			wrapper = d3.select(elem[0])
+          .datum(currentData)
+          .call(myChart);
+			});
+		}
+	};
 });

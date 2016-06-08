@@ -1,5 +1,6 @@
-// function that returns a top-to-bottom tree
-var TreeChart = function () {
+// function that returns a bottom-to-top tree
+
+var TreeChart2 = function () {
 	// Sets default values
 	var width, height, margin, linkColor, bgcolor;
 	
@@ -21,7 +22,8 @@ var TreeChart = function () {
 		// Loop through selections and data bound to each element
 		selection.each(function(root) {
 			// Select `this` as the element in which you want to render your chart
-     		var div = d3.select(this);		// container			
+     		var div = d3.select(this);		// container			 
+			
 			margin = {top: 100, right: 50, bottom: 100, left: 50};
 			width = 900 - margin.left - margin.right;
 			height = 500 - margin.top - margin.bottom;
@@ -29,10 +31,8 @@ var TreeChart = function () {
 			var tree = d3.layout.tree()
 				.separation(function(a, b) { return a.parent === b.parent ? 1 : 1.2; })
 				.children(function(d) { return d.parents; })
-				.size([width, height]);		
-				
-			var color = d3.scale.category10();
-						
+				.size([width, height]);			
+					
 	        // Selection of SVG elements in DIV (making sure not to re-append svg)		 
 			var svg = div.append("svg")
 				.attr("bgcolor", bgcolor)
@@ -41,10 +41,11 @@ var TreeChart = function () {
 				.append("g")
 				.attr("transform", "translate(" + margin.left + "," + margin.top + ")");
 			
+			// var nodes = tree.nodes(getData2());
 			var nodes = tree.nodes(root[0]);
-			
+
 			var node = svg.selectAll(".node").data(nodes);
-			
+
 //			
 			node.exit()
 				.transition()
@@ -59,16 +60,15 @@ var TreeChart = function () {
 				.duration(800)
 				.attr("transform", function(d) { return "rotate(" + (d.x - 90) + ")translate(" + d.y + ")"; });
 //
-			
 			node.enter()
 				.append("g");
 				
 			node.append("rect")
 				.attr("width", 140)
 				.attr("height", 80)
-				.attr("fill", function(d) {return color(d.source.depth); })
+				.attr("fill", "tan")
 				.attr("x", function(d) { return d.x - 70; })
-				.attr("y", function(d) { return d.y - 40; })
+				.attr("y", function(d) { return height - d.y - 40; })
 				//
 				.style("opacity", 0)
 				.transition()
@@ -81,10 +81,10 @@ var TreeChart = function () {
 			node.append("text")
 				.attr("font-size", "12px")
 				.attr("x", function(d) { return d.x; })
-				.attr("y", function(d) { return 10 + d.y; })
+				.attr("y", function(d) { return 10 + height - d.y; })
 				.style("text-anchor", "middle")
 				.text(function(d) { return d.text ;})
-				.style("opacity", 0)
+                .style("opacity", 0)
 				.transition()
 				.duration(600)
 				.delay(function(d,i) {
@@ -93,40 +93,40 @@ var TreeChart = function () {
 				.style("opacity", 1);
 			
 			var link = svg.selectAll(".link").data(tree.links(nodes));
-			
+
 			link.transition()
 				.delay(400)
 				.duration(600)
-				.attr("d", connect2);
+				.attr("d", connect);
 				
 			link.enter()
 				.insert("path", "g")
 				.attr("fill", "none")
 				.attr("stroke", linkColor)
 				.attr("shape-rendering", "crispEdges")
-				.attr("d", connect2)
+				.attr("d", connect)
 				.style("opacity", 0)
 				.transition()
 				.duration(1600)
 				.delay(function(d,i) {
 					return 24*i;
 				})
-				.style("opacity", 1);
-				
-
-			function connect2(d, i) {
-				return     "M" + d.source.x + "," + ( d.source.y)
-						+ "V" + ((3*d.source.y + 4*d.target.y)/7)
+				.style("opacity", 1);       
+            
+			function connect(d, i) {
+				return     "M" + d.source.x + "," + (height - d.source.y)
+						+ "V" + (height -(3*d.source.y + 4*d.target.y)/7)
 						+ "H" + d.target.x
-						+ "V" + (d.target.y);
+						+ "V" + (height - d.target.y);
 			};
-			
+            			
 			link.exit()
 				.transition()
 				.duration(600)
 				.style("opacity", 0)
 				.delay(400)
-     			.remove();
+     			.remove();     
+			
 			// Use the .exit() and .remove() methods to remove elements that are no longer in the data
 			// node.exit().remove();
             // link.exit().remove();           

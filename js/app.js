@@ -1,74 +1,41 @@
-var myApp = angular.module('myApp', [])
+// Main JavaScript File for divide-and-conquer
 
-// Main controller
-.controller('MainController', function($scope) {
-    // Data for the chart
-    $scope.data = [
-    {   
-        "name": "0",
-        "text" : "problem",
-        "parents": [
-        {
-            "name": "1A",
-            "text" : "subproblem",
-            "parents": [
-            {
-                "name": "2A",
-                "text" : "subproblem"
-            },
-            {
-                "name": "2B",
-                "text" : "subproblem"
-            }
-            ]
-        },
-        {
-            "name": "1B",
-            "text" : "subproblem",
-            "parents": [
-            {
-                "name": "2C",
-                "text" : "subproblem"
-            },
-            {
-                "name": "2D",
-                "text" : "subproblem"
-            }
-            ]
-        }
-        ]
-    }
-    ];
+// After the page load
+$(function chart1() {
+	var data = "../data/top-bottom-tree.json";
 
-})
+	
+	d3.json(data, function(error, root) {
+		if(error) throw error;
+		
+		// Create an instance of the tree chart
+		var treeChart = TreeChart();
+		
+		
+		// Select the container div, bind the data (datum) to it,
+  		// then call the instantiation of the tree chart function
+		var chartWrapper = d3.select("#treeExample")
+			.datum(root).
+			call(treeChart);
+	});	
+});
 
 
-// Create a directive 'scatter' that creates scatterplots
-.directive('treeChart', function() {
-    // Return your directive element
-    return {
-        restrict: 'E', // this directive is specified as an html element <scatter>
-        scope: false,
-        // Create a link function that allows dynamic element creation
-        link: function(scope, elem) {
-            // Define you chart function and chart element
-            var myChart = TreeChart();
+$(function chart2() {
+	// var data2 = "./data/bottom-to-top.json";
 
-            // Wrapper element to put your chart in
-            var chart = d3.select(elem[0]);
-
-            // Use the scope.$watch method to watch for changes to the step, then re-draw your chart
-            scope.$watch('data', function() {
-                // Instantiate your chart with given settings
-                // myChart.xVar('name')
-                //     .yVar('concerts')
-                //     .xAxisLabel('Name')
-                //     .yAxisLabel('Concerts Attended');
-
-                // Bind data and call the chart function
-                chart.datum(scope.data)
-                    .call(myChart);
-            }, true); // Watch for object consistency!
-        }
-    };
+	
+	d3.json("../data/bottom-top-tree.json", function(error, root) {
+		if(error) throw error;
+		
+		// Create an instance of the tree chart
+		var treeChart2 = TreeChart2();
+		
+		
+		// Select the container div, bind the data (datum) to it,
+  		// then call the instantiation of the tree chart function
+		var chartWrapper2 = d3.select("#treeExample2")
+			.datum(root).
+			call(treeChart2);
+	});	
 });
